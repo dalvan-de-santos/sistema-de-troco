@@ -1,34 +1,29 @@
 import os
 
+import pymysql
+
+#criando conexão com banco de dados
+conexao = pymysql.connect(host='localhost',
+                          user='root',
+                          password='',
+                          database='produtos')
+
+cursor = conexao.cursor()
+
+#selecionando tabela
+cursor.execute("SELECT * FROM produto")
+
 
 compra = []
 produtos = []
 
+#adicionando dados da tabela em uma lista
+for v in cursor:
+    produtos.append(v)
 
 
-def menu():
-    list = ['cadastrar produto', 'troco']
-    print('================')
-    for index, v in enumerate(list):
-        print(f'{index + 1}ª: {v}')
-    print('================')
 
-def cadastrar():
-    try:
-        print('Nome do produto')
-        nome = str(input('>> ')).upper()
-
-        print('Valor do produto')
-        valor_produto = float(input('>> '))
-        produto = {}
-
-        produto[nome] = valor_produto
-
-        produtos.append(produto)
-    except:
-        print('Erro no cadastro')
-
-
+#função para calcular troco
 def troco():
     
     valor = 0
@@ -43,11 +38,11 @@ def troco():
             
             
             for v in range(len(produtos)):
-                if prod in produtos[v]:
-                    valor = valor + produtos[v][prod] * quant
+                if prod == produtos[v][1]:
+                    valor = valor + produtos[v][2] * quant
                     cp = []
                     cp.append(prod)
-                    cp.append(produtos[v][prod])
+                    cp.append(produtos[v][2])
                     cp.append(quant)
                     compra.append(cp)
             
@@ -60,32 +55,25 @@ def troco():
                 break
     except:
         print('Erro no troco')
-
+    
+    #gerando recibo da compra
+    print(f'Valor da compra R${valor}')
     print('Valor recebido: ')       
     valor_recebido = float(input('>> '))
 
     troco = valor_recebido - valor
 
+    print('********Recibo*********')
     for id, v in enumerate(compra):
         print(f'{v[0]} -- R${v[1]} -- {v[2]}X')
     
-
-    print(f' seu troco {troco}')
-    
+    print(f'Total da compra R${valor}')
+    print(f'Total recebido R${valor_recebido}')
+    print(f'Troco R${troco:.2f}')
+    print('************************')
     
 
 while True:
-    menu()
-    print('Qual sua opção? ')
-    op = int(input('>> '))
+    troco()
+    input('>> ')
     os.system('cls')
-
-    if op == 1:
-        cadastrar()
-        input('>> ')
-        os.system('cls')
-
-    elif op == 2:
-        troco()
-        input('>> ')
-        os.system('cls')
